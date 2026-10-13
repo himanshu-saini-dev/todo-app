@@ -2,9 +2,18 @@ const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
 const listEl = document.querySelector("#list");
 
+// M4: DOM elements for footer
+const countSpan = document.querySelector("#count");
+const clearDoneBtn = document.querySelector("#clear-done-btn");
+
 let tasks = [];
 
 function render() {
+  // 1. M4: Derived Data calculation (Pending tasks count)
+  const pendingCount = tasks.filter((t) => !t.done).length;
+  countSpan.textContent = `${pendingCount} ${pendingCount === 1 ? "task" : "tasks"} left`;
+
+  // Purani screen clear
   listEl.replaceChildren();
 
   const fragment = document.createDocumentFragment();
@@ -14,18 +23,18 @@ function render() {
     li.className = `task-item ${task.done ? "done" : ""}`;
     li.dataset.id = task.id;
 
-    // 1. Checkbox
+    // Checkbox
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "toggle-chk";
     checkbox.checked = task.done;
 
-    // 2. Text
+    // Text
     const textSpan = document.createElement("span");
     textSpan.className = "task-text";
     textSpan.textContent = task.text;
 
-    // 3. Delete Button
+    // Delete Button
     const delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "del-btn";
@@ -38,7 +47,7 @@ function render() {
   listEl.append(fragment);
 }
 
-// Form submit
+// Form submit: Add task
 taskForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -65,7 +74,6 @@ listEl.addEventListener("click", (e) => {
 
   const id = Number(li.dataset.id);
 
-  // Case A: Checkbox par click
   if (e.target.classList.contains("toggle-chk")) {
     tasks = tasks.map((task) => {
       if (task.id === id) {
@@ -77,10 +85,15 @@ listEl.addEventListener("click", (e) => {
     return;
   }
 
-  // Case B: Delete button ✕ par click
   if (e.target.classList.contains("del-btn")) {
     tasks = tasks.filter((task) => task.id !== id);
     render();
     return;
   }
+});
+
+// M4: Clear completed tasks button
+clearDoneBtn.addEventListener("click", () => {
+  tasks = tasks.filter((task) => !task.done);
+  render();
 });
