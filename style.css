@@ -77,7 +77,7 @@ form {
 }
 
 .task-item {
-  display: flex;
+   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 8px;
@@ -128,39 +128,4 @@ form {
   color: #ef4444;
   cursor: pointer;
   font-size: 0.85rem;
-}
-
-.task-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 8px;
-  border-bottom: 1px solid #eee;
-}
-
-.task-item.done .task-text {
-  text-decoration: line-through;
-  color: #888;
-}
-
-.task-text {
-  flex: 1;
-  word-break: break-all;
-}
-
-.del-btn {
-  color: #ef4444;
-  border: none;
-  background: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 2px 6px;
-}
-
-.edit-input {
-  flex: 1;
-  padding: 6px 8px;
-  border: 1px solid #2563eb;
-  border-radius: 4px;
-  font-size: 0.95rem;
 }
