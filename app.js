@@ -3,20 +3,18 @@ const taskInput = document.querySelector("#task-input");
 const listEl = document.querySelector("#list");
 const countSpan = document.querySelector("#count");
 const clearDoneBtn = document.querySelector("#clear-done-btn");
-
-// M5: filters container pakdo
 const filtersContainer = document.querySelector("#filters");
 
-// State: Register ke 2 hisse
-let tasks = [];
+// M7: Load state from localStorage on startup (fallback to empty array)
+let tasks = JSON.parse(localStorage.getItem("school_tasks")) ?? [];
 let filter = "all"; // "all" | "active" | "done"
 
 function render() {
-  // 1. Live counter calculation
+  // 1. Live derived counter
   const pendingCount = tasks.filter((t) => !t.done).length;
   countSpan.textContent = `${pendingCount} ${pendingCount === 1 ? "task" : "tasks"} left`;
 
-  // 2. M5: Filter condition ke hisab se dikhane wali list chuno
+  // 2. Filter logic
   let visibleTasks = tasks;
   if (filter === "active") {
     visibleTasks = tasks.filter((t) => !t.done);
@@ -24,12 +22,11 @@ function render() {
     visibleTasks = tasks.filter((t) => t.done);
   }
 
-  // Purani screen list khali karo
+  // DOM saaf karo
   listEl.replaceChildren();
 
   const fragment = document.createDocumentFragment();
 
-  // Screen par sirf filtered (visible) tasks draw honge
   visibleTasks.forEach((task) => {
     const li = document.createElement("li");
     li.className = `task-item ${task.done ? "done" : ""}`;
@@ -41,7 +38,7 @@ function render() {
     checkbox.className = "toggle-chk";
     checkbox.checked = task.done;
 
-    // Text
+    // Safe Text
     const textSpan = document.createElement("span");
     textSpan.className = "task-text";
     textSpan.textContent = task.text;
@@ -58,7 +55,7 @@ function render() {
 
   listEl.append(fragment);
 
-  // 3. M5: Active filter button par blue highlight update karo
+  // 3. Active filter button styling
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     if (btn.dataset.filter === filter) {
       btn.classList.add("active");
@@ -66,9 +63,12 @@ function render() {
       btn.classList.remove("active");
     }
   });
+
+  // 4. M7: Save updated state in localStorage
+  localStorage.setItem("school_tasks", JSON.stringify(tasks));
 }
 
-// Form submit: Add task
+// Ram Chacha flow: Add Task
 taskForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -113,13 +113,13 @@ listEl.addEventListener("click", (e) => {
   }
 });
 
-// Clear completed button
+// Clear completed tasks
 clearDoneBtn.addEventListener("click", () => {
   tasks = tasks.filter((task) => !task.done);
   render();
 });
 
-// M5: Filter buttons click listener via delegation
+// Filters delegation
 filtersContainer.addEventListener("click", (e) => {
   const btn = e.target.closest(".filter-btn");
   if (!btn) return;
@@ -128,8 +128,7 @@ filtersContainer.addEventListener("click", (e) => {
   render();
 });
 
-
-// M6: Double click to inline edit task text
+// Inline edit on double click
 listEl.addEventListener("dblclick", (e) => {
   const textSpan = e.target.closest(".task-text");
   if (!textSpan) return;
@@ -139,17 +138,14 @@ listEl.addEventListener("dblclick", (e) => {
   const currentTask = tasks.find((t) => t.id === id);
   if (!currentTask) return;
 
-  // 1. Ek temporary input box banao
   const input = document.createElement("input");
   input.type = "text";
   input.className = "edit-input";
   input.value = currentTask.text;
 
-  // 2. Span ko input box se badlo aur focus karo
   textSpan.replaceWith(input);
   input.focus();
 
-  // 3. Save logic
   function saveEdit() {
     const newText = input.value.trim();
     if (newText) {
@@ -158,12 +154,10 @@ listEl.addEventListener("dblclick", (e) => {
     render();
   }
 
-  // 4. Cancel logic
   function cancelEdit() {
     render();
   }
 
-  // Keys handle karo: Enter par save, Escape par cancel
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       saveEdit();
@@ -172,8 +166,10 @@ listEl.addEventListener("dblclick", (e) => {
     }
   });
 
-  // Bahar click hone par bhi save ho jaye
   input.addEventListener("blur", () => {
     saveEdit();
   });
 });
+
+// M7: First paint on load
+render();
