@@ -1,24 +1,36 @@
 const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
 const listEl = document.querySelector("#list");
-
-// M4: DOM elements for footer
 const countSpan = document.querySelector("#count");
 const clearDoneBtn = document.querySelector("#clear-done-btn");
 
+// M5: filters container pakdo
+const filtersContainer = document.querySelector("#filters");
+
+// State: Register ke 2 hisse
 let tasks = [];
+let filter = "all"; // "all" | "active" | "done"
 
 function render() {
-  // 1. M4: Derived Data calculation (Pending tasks count)
+  // 1. Live counter calculation
   const pendingCount = tasks.filter((t) => !t.done).length;
   countSpan.textContent = `${pendingCount} ${pendingCount === 1 ? "task" : "tasks"} left`;
 
-  // Purani screen clear
+  // 2. M5: Filter condition ke hisab se dikhane wali list chuno
+  let visibleTasks = tasks;
+  if (filter === "active") {
+    visibleTasks = tasks.filter((t) => !t.done);
+  } else if (filter === "done") {
+    visibleTasks = tasks.filter((t) => t.done);
+  }
+
+  // Purani screen list khali karo
   listEl.replaceChildren();
 
   const fragment = document.createDocumentFragment();
 
-  tasks.forEach((task) => {
+  // Screen par sirf filtered (visible) tasks draw honge
+  visibleTasks.forEach((task) => {
     const li = document.createElement("li");
     li.className = `task-item ${task.done ? "done" : ""}`;
     li.dataset.id = task.id;
@@ -45,6 +57,15 @@ function render() {
   });
 
   listEl.append(fragment);
+
+  // 3. M5: Active filter button par blue highlight update karo
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    if (btn.dataset.filter === filter) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
 }
 
 // Form submit: Add task
@@ -92,8 +113,17 @@ listEl.addEventListener("click", (e) => {
   }
 });
 
-// M4: Clear completed tasks button
+// Clear completed button
 clearDoneBtn.addEventListener("click", () => {
   tasks = tasks.filter((task) => !task.done);
+  render();
+});
+
+// M5: Filter buttons click listener via delegation
+filtersContainer.addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+
+  filter = btn.dataset.filter;
   render();
 });
