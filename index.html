@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Task Board</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <main class="app-container">
+    <h1>School Task Board</h1>
+
+    <!-- M1: Task Input Form -->
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="What needs to be done?" autocomplete="off">
+      <button type="submit" id="add-btn">Add Task</button>
+    </form>
+
+    <!-- M1: Filters Bar -->
+    <div class="filters" id="filters">
+      <button type="button" class="filter-btn active" data-filter="all">All</button>
+      <button type="button" class="filter-btn" data-filter="active">Active</button>
+      <button type="button" class="filter-btn" data-filter="done">Done</button>
+    </div>
+
+    <!-- M1: Tasks List -->
+    <ul id="list"></ul>
+
+    <!-- M1: Footer Info -->
+    <footer class="board-footer">
+      <span id="count">0 tasks left</span>
+      <button type="button" id="clear-done-btn">Clear completed</button>
+    </footer>
+  </main>
+
+</body>
+</html>
