@@ -1,57 +1,86 @@
-// 1. DOM elements pakdo
 const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
 const listEl = document.querySelector("#list");
 
-// 2. State (sharma ji ka register)
 let tasks = [];
 
-// 3. Render function: register ko dekh kar board draw karta hai
 function render() {
-  // purani list saaf karo
   listEl.replaceChildren();
 
-  // tray banao jisme sare items ek sath rakhenge
   const fragment = document.createDocumentFragment();
 
   tasks.forEach((task) => {
     const li = document.createElement("li");
+    li.className = `task-item ${task.done ? "done" : ""}`;
     li.dataset.id = task.id;
 
-    // text span: safe textContent taaki koi script injection na ho
+    // 1. Checkbox
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "toggle-chk";
+    checkbox.checked = task.done;
+
+    // 2. Text
     const textSpan = document.createElement("span");
+    textSpan.className = "task-text";
     textSpan.textContent = task.text;
 
-    li.append(textSpan);
+    // 3. Delete Button
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "del-btn";
+    delBtn.textContent = "✕";
+
+    li.append(checkbox, textSpan, delBtn);
     fragment.append(li);
   });
 
-  // ek sath screen par chipkao
   listEl.append(fragment);
 }
 
-// 4. Form submit: Ram Chacha flow
+// Form submit
 taskForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  // Read & Clean
   const text = taskInput.value.trim();
-
-  // Check: khali ya sirf space hai toh ignore
   if (!text) return;
 
-  // Save to State
   const newTask = {
     id: Date.now(),
     text: text,
     done: false
   };
-  tasks.push(newTask);
 
-  // Show
+  tasks.push(newTask);
   render();
 
-  // Reset
   taskForm.reset();
   taskInput.focus();
+});
+
+// Single Delegated listener on <ul> for Toggle & Delete
+listEl.addEventListener("click", (e) => {
+  const li = e.target.closest("li");
+  if (!li) return;
+
+  const id = Number(li.dataset.id);
+
+  // Case A: Checkbox par click
+  if (e.target.classList.contains("toggle-chk")) {
+    tasks = tasks.map((task) => {
+      if (task.id === id) {
+        return { ...task, done: !task.done };
+      }
+      return task;
+    });
+    render();
+    return;
+  }
+
+  // Case B: Delete button ✕ par click
+  if (e.target.classList.contains("del-btn")) {
+    tasks = tasks.filter((task) => task.id !== id);
+    render();
+    return;
+  }
 });
