@@ -127,3 +127,53 @@ filtersContainer.addEventListener("click", (e) => {
   filter = btn.dataset.filter;
   render();
 });
+
+
+// M6: Double click to inline edit task text
+listEl.addEventListener("dblclick", (e) => {
+  const textSpan = e.target.closest(".task-text");
+  if (!textSpan) return;
+
+  const li = textSpan.closest("li");
+  const id = Number(li.dataset.id);
+  const currentTask = tasks.find((t) => t.id === id);
+  if (!currentTask) return;
+
+  // 1. Ek temporary input box banao
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "edit-input";
+  input.value = currentTask.text;
+
+  // 2. Span ko input box se badlo aur focus karo
+  textSpan.replaceWith(input);
+  input.focus();
+
+  // 3. Save logic
+  function saveEdit() {
+    const newText = input.value.trim();
+    if (newText) {
+      currentTask.text = newText;
+    }
+    render();
+  }
+
+  // 4. Cancel logic
+  function cancelEdit() {
+    render();
+  }
+
+  // Keys handle karo: Enter par save, Escape par cancel
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      saveEdit();
+    } else if (event.key === "Escape") {
+      cancelEdit();
+    }
+  });
+
+  // Bahar click hone par bhi save ho jaye
+  input.addEventListener("blur", () => {
+    saveEdit();
+  });
+});
