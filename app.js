@@ -128,7 +128,7 @@ filtersContainer.addEventListener("click", (e) => {
   render();
 });
 
-// M6 Fix: Double click inline edit with working Escape cancel
+// Fix 3: Inline edit using immutable map + spread
 listEl.addEventListener("dblclick", (e) => {
   const textSpan = e.target.closest(".task-text");
   if (!textSpan) return;
@@ -152,7 +152,12 @@ listEl.addEventListener("dblclick", (e) => {
     if (isCancelled) return;
     const newText = input.value.trim();
     if (newText) {
-      currentTask.text = newText;
+      tasks = tasks.map((t) => {
+        if (t.id === id) {
+          return { ...t, text: newText };
+        }
+        return t;
+      });
     }
     render();
   }
@@ -174,6 +179,5 @@ listEl.addEventListener("dblclick", (e) => {
     saveEdit();
   });
 });
-
 // M7: First paint on load
 render();
