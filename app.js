@@ -128,7 +128,7 @@ filtersContainer.addEventListener("click", (e) => {
   render();
 });
 
-// Inline edit on double click
+// M6 Fix: Double click inline edit with working Escape cancel
 listEl.addEventListener("dblclick", (e) => {
   const textSpan = e.target.closest(".task-text");
   if (!textSpan) return;
@@ -146,7 +146,10 @@ listEl.addEventListener("dblclick", (e) => {
   textSpan.replaceWith(input);
   input.focus();
 
+  let isCancelled = false;
+
   function saveEdit() {
+    if (isCancelled) return;
     const newText = input.value.trim();
     if (newText) {
       currentTask.text = newText;
@@ -155,6 +158,7 @@ listEl.addEventListener("dblclick", (e) => {
   }
 
   function cancelEdit() {
+    isCancelled = true;
     render();
   }
 
